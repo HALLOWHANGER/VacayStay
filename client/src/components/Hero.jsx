@@ -39,7 +39,7 @@ const Hero = () => {
             <div class="flex flex-col md:flex-row items-center mt-8 gap-3">
                 <button
                     class="bg-[#396ce5] text-white px-6 py-2.5 h-14 rounded-sm text-sm font-medium flex items-center text-center space-x-2 hover:bg-[#3360CC] transition"
-                    type="button" onClick={() => navigate('/rooms')}>
+                    type="button" onClick={() => navigate('/hotels')}>
                         Visit Rooms
                 </button>
                 <a class="bg-white text-[#396ce5] px-6 py-2.5 h-14 rounded-sm text-sm font-medium flex items-center text-center space-x-2 hover:bg-[#F7F7F7] transition"
