@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema(
     username: { type: String, required: true },
     email: { type: String, required: true },
     image: { type: String, default: "" },
-    role: { type: String, enum: ["user", "hotelOwner"], default: "user" },
+    role: { type: String, enum: ["user", "hotelOwner", "Admin"], default: "user" },
     recentSearchedCities: { type: [String], default: [] },
   },
   { timestamps: true }

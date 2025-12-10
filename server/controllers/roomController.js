@@ -47,6 +47,23 @@ export const getRooms = async (req, res) => {
   }
 };
 
+export const getAdminRooms = async (req, res) => {
+  try {
+    const rooms = await Room.find()
+      .populate({
+        path: 'hotel',
+        populate: {
+          path: 'owner', 
+          select: 'image',
+        },
+      }).sort({ createdAt: -1 });
+    res.json({ success: true, rooms });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
 export const getOwnerRooms = async (req, res) => {
   try {
     const hotelData = await Hotel.findOne({ owner: req.auth.userId });

@@ -56,6 +56,22 @@ export const getAllHotels = async (req, res) => {
   }
 };
 
+export const getAllAdminHotels = async (req, res) => {
+  try {
+    const hotels = await Hotel.find();
+
+    res.json({
+      success: true,
+      hotels,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 export const toggleRoomAvailability = async (req, res) => {
   try {
