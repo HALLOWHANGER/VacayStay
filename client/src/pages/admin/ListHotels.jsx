@@ -10,6 +10,7 @@ const ListRoom = () => {
     const [PendingHotels, setPending] = React.useState([])
     const [Hotels, setHotels] = React.useState([])
 
+
     const fetchPending = async () => {
         try {
             const { data } = await axios.get('/api/hotels/pending_hotels', { headers: { Authorization: `Bearer ${await getToken()}` } })
@@ -26,7 +27,7 @@ const ListRoom = () => {
 
     const fetchHotels = async () => {
         try {
-            const { data } = await axios.get('/api/hotels', { headers: { Authorization: `Bearer ${await getToken()}` } })
+            const { data } = await axios.get('/api/hotels/admin', { headers: { Authorization: `Bearer ${await getToken()}` } })
             if (data.success) {
                 setHotels(data.hotels)
             }

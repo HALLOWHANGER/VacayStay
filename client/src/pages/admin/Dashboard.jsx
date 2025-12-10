@@ -86,7 +86,7 @@ const statusIcon = (status) => {
 
 
   return (
-    <div className="w-full p-6 bg-slate-50 min-h-screen">
+    <div className="w-full p-6 min-h-screen">
       <h1 className="text-3xl font-semibold mb-6 flex items-center gap-2">Admin Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

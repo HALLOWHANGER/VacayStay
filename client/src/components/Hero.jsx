@@ -31,7 +31,7 @@ const Hero = () => {
         <div class="flex flex-col items-center md:items-start">
             <p class="bg-[#396ce5] px-3.5 py-1 rounded-full mt-20 text-white">The Ultimate Hotel Experience</p>
             <h1 class="text-white font-semibold text-3xl sm:text-4xl md:text-5xl max-w-xl mt-5">
-                Discover Your <span class="text-[#396ce5]">Perfect Gateway Destination</span>
+                Discover Your Perfect Gateway Destination
             </h1>
             <p class="mt-4 text-white max-w-md text-sm sm:text-base leading-relaxed">
                 Unparalleled luxury and comfort await at the world's most exclusive hotels and resorts. Start your journey today.
@@ -39,7 +39,7 @@ const Hero = () => {
             <div class="flex flex-col md:flex-row items-center mt-8 gap-3">
                 <button
                     class="bg-[#396ce5] text-white px-6 py-2.5 h-14 rounded-sm text-sm font-medium flex items-center text-center space-x-2 hover:bg-[#3360CC] transition"
-                    type="button" onClick={() => navigate('/hotels')}>
+                    type="button">
                         Visit Rooms
                 </button>
                 <a class="bg-white text-[#396ce5] px-6 py-2.5 h-14 rounded-sm text-sm font-medium flex items-center text-center space-x-2 hover:bg-[#F7F7F7] transition"

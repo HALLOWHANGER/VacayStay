@@ -9,7 +9,7 @@ const ListRoom = () => {
 
     const fetchRooms = async () => {
         try {
-            const { data } = await axios.get('/api/rooms')
+            const { data } = await axios.get('/api/rooms/admin')
             if (data.success) {
                 setRooms(data.rooms)
             }
