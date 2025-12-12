@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { assets, roomCommonData } from '../assets/assets'
 import { useAppContext } from '../context/AppContext';
+import { useUser } from "@clerk/clerk-react";
+
 import { useParams } from 'react-router-dom';
 import StarRating from '../components/StarRating';
 import toast from 'react-hot-toast';
 
 const RoomDetails = () => {
     const { id } = useParams();
+    const { user } = useUser();
+
     const { facilityIcons, rooms, getToken, axios, navigate } = useAppContext();
 
     const [room, setRoom] = useState(null);
@@ -120,25 +124,77 @@ const RoomDetails = () => {
             </div>
 
             {/* CheckIn CheckOut Form */}
-            <form onSubmit={onSubmitHandler} className='flex flex-col md:flex-row items-start md:items-center justify-between bg-white shadow-[0px_0px_20px_rgba(0,0,0,0.15)] p-6 rounded-xl mx-auto mt-16 max-w-6xl'>
-                <div className='flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500'>
-                    <div className='flex flex-col'>
-                        <label htmlFor='checkInDate' className='font-medium'>Check-In</label>
-                        <input onChange={(e) => setCheckInDate(e.target.value)} id='checkInDate' type='date' min={new Date().toISOString().split('T')[0]} className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' placeholder='Check-In' required />
-                    </div>
-                    <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
-                    <div className='flex flex-col'>
-                        <label htmlFor='checkOutDate' className='font-medium'>Check-Out</label>
-                        <input onChange={(e) => setCheckOutDate(e.target.value)} id='checkOutDate' type='date' min={checkInDate} disabled={!checkInDate} className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' placeholder='Check-Out' required />
-                    </div>
-                    <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
-                    <div className='flex flex-col'>
-                        <label htmlFor='guests' className='font-medium'>Guests</label>
-                        <input onChange={(e) => setGuests(e.target.value)} value={guests} id='guests' type='number' className='max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none' placeholder='0' required />
-                    </div>
-                </div>
-                <button type='submit' className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-25 py-3 md:py-4 text-base cursor-pointer'>{isAvailable ? "Book Now" : "Check Availability"}</button>
-            </form>
+            <form
+  onSubmit={(e) => {
+    e.preventDefault();
+    if (!user) {
+      toast.error("You must be logged in to book");
+      return;
+    }
+    onSubmitHandler(e);
+  }}
+  className='flex flex-col md:flex-row items-start md:items-center justify-between bg-white shadow-[0px_0px_20px_rgba(0,0,0,0.15)] p-6 rounded-xl mx-auto mt-16 max-w-6xl'
+>
+  <div className='flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500'>
+    <div className='flex flex-col'>
+      <label htmlFor='checkInDate' className='font-medium'>Check-In</label>
+      <input
+        onChange={(e) => setCheckInDate(e.target.value)}
+        id='checkInDate'
+        type='date'
+        min={new Date().toISOString().split("T")[0]}
+        max={new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+          .toISOString()
+          .split("T")[0]}
+        className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none'
+        placeholder='Check-In'
+        required
+      />
+    </div>
+
+    <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
+
+    <div className='flex flex-col'>
+      <label htmlFor='checkOutDate' className='font-medium'>Check-Out</label>
+      <input
+        onChange={(e) => setCheckOutDate(e.target.value)}
+        id='checkOutDate'
+        type='date'
+        min={checkInDate || new Date().toISOString().split("T")[0]}
+        max={new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+          .toISOString()
+          .split("T")[0]}
+        disabled={!checkInDate}
+        className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none'
+        placeholder='Check-Out'
+        required
+      />
+    </div>
+
+    <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
+
+    <div className='flex flex-col'>
+      <label htmlFor='guests' className='font-medium'>Guests</label>
+      <input
+        onChange={(e) => setGuests(e.target.value)}
+        value={guests}
+        id='guests'
+        type='number'
+        className='max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none'
+        placeholder='0'
+        required
+      />
+    </div>
+  </div>
+
+  <button
+    type='submit'
+    className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-25 py-3 md:py-4 text-base cursor-pointer'
+  >
+    {!user ? "Login to Book" : isAvailable ? "Book Now" : "Check Availability"}
+  </button>
+</form>
+
 
             {/* Common Specifications */}
             <div className='mt-25 space-y-4'>                

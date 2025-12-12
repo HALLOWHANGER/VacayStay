@@ -1,8 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { assets } from '../assets/assets'
 import { useAppContext } from '../context/AppContext'
 import StarRating from '../components/StarRating'
 import { useSearchParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+
 
 const CheckBox = ({ label, selected = true, onChange = () => { } }) => {
     return (
@@ -23,13 +25,15 @@ const RadioButton = ({ label, selected = true, onChange = () => { } }) => {
 }
 
 const AllRooms = () => {
+    const { id } = useParams();
+
+    const randomNumber = Math.floor(Math.random() * 500) + 1;
 
     const [searchParams, setSearchParams] = useSearchParams();
+    const [rooms, setRoom] = useState([]);
 
     const { facilityIcons, navigate, hotel_rooms, currency } = useAppContext();
     const [openFilters, setOpenFilters] = useState(false);
-
-    const rooms = hotel_rooms;
 
     const [selectedFilters, setSelectedFilters] = useState({
         roomType: [],
@@ -56,6 +60,12 @@ const AllRooms = () => {
         "Price High to Low",
         "Newest First"
     ];
+
+    useEffect(() => {
+    const matchedRooms = hotel_rooms.filter(room => room.hotel._id === id);
+        setRoom(matchedRooms);
+}, [hotel_rooms, id]);
+
 
     const handleFilterChange = (checked, value, type) => {
         setSelectedFilters((prevFilters) => {
@@ -97,7 +107,6 @@ const AllRooms = () => {
         return 0;
     };
 
-    // Filter Destination
     const filterDestination = (room) => {
         const destination = searchParams.get('destination');
         if (!destination) return true;
@@ -110,7 +119,6 @@ const AllRooms = () => {
             .sort(sortRooms);
     }, [rooms, selectedFilters, selectedSort, searchParams]);
 
-    // Clear all filters
     const clearFilters = () => {
         setSelectedFilters({
             roomType: [],
@@ -119,6 +127,8 @@ const AllRooms = () => {
         setSelectedSort('')
         setSearchParams({});
     }
+
+    
 
     return (
         <div className='flex flex-col-reverse lg:flex-row items-start justify-between pt-28 md:pt-35 px-4 md:px-16 lg:px-24 xl:px-32'>
@@ -147,7 +157,7 @@ const AllRooms = () => {
                             <p onClick={() => { navigate(`/rooms/${room._id}`); scrollTo(0, 0) }} className='text-gray-800 text-3xl font-playfair cursor-pointer' title='View Room Details'>{room.roomType}</p>
                             <div className='flex items-center'>
                                 <StarRating />
-                                <p className="ml-2">{Math.floor(Math.random() * 500) + 1}+ reviews</p>
+                                <p className="ml-2">{randomNumber}+ reviews</p>
                             </div>
                             <div className='flex items-center gap-1 text-gray-500 mt-2 text-sm'>
                                 <img src={assets.locationIcon} alt="location-icon" />

@@ -1,7 +1,7 @@
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 
@@ -10,7 +10,6 @@ axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-
     const currency = import.meta.env.VITE_CURRENCY || "$";
     const navigate = useNavigate();
     const { user } = useUser();
@@ -22,6 +21,7 @@ export const AppProvider = ({ children }) => {
     const [Pending, setPendingCurrent] = useState(false);
     const [PendingPayment, setPendingPayment] = useState(false);
     const [showHotelReg, setShowHotelReg] = useState(false);
+
     const [rooms, setRooms] = useState([]);
     const [hotel_rooms, set_hotel_Rooms] = useState([]);
     const [cities, setCity] = useState([]);
@@ -38,7 +38,11 @@ export const AppProvider = ({ children }) => {
         "Pool Access": assets.poolIcon,
     };
 
-    // --- RESET CONTEXT ON LOGOUT ---
+    const safeError = (err) => {
+        if (!user) return;
+        toast.error(err?.response?.data?.message || err.message);
+    };
+
     const resetAppContext = () => {
         setIsOwner(false);
         setAdmin(false);
@@ -54,131 +58,128 @@ export const AppProvider = ({ children }) => {
         setSearchedCities([]);
     };
 
-    // --- FETCH FUNCTIONS ---
+    const authHeaders = async () => {
+        if (!user) return {};
+        return { Authorization: `Bearer ${await getToken()}` };
+    };
+
     const fetchUser = async () => {
-        if (!user) return;
         try {
-            const token = await getToken();
-            const { data } = await axios.get('/api/user', { headers: { Authorization: `Bearer ${token}` } });
+            const headers = await authHeaders();
+            const { data } = await axios.get("/api/user", { headers });
             if (data.success) {
                 setIsOwner(data.role === "hotelOwner");
                 setAdmin(data.role === "Admin");
                 setSearchedCities(data.recentSearchedCities || []);
                 fetchOwnerHotels();
             }
-        } catch (error) {
-            console.log("Fetch user error:", error);
-            toast.error(error.response?.data?.message || error.message);
+        } catch (err) {
+            safeError(err);
         }
     };
 
     const fetchPendingHotels = async () => {
-        if (!user) return;
         try {
-            const { data } = await axios.get('/api/hotels/pending');
+            const { data } = await axios.get("/api/hotels/pending");
             if (data.success) setPendingCurrent(data.hotelsP);
-        } catch (error) {
-            toast.error(error.response?.data?.message || error.message);
+        } catch (err) {
+            safeError(err);
         }
     };
 
     const fetchRooms = async () => {
         try {
-            const { data } = await axios.get('/api/rooms');
+            const { data } = await axios.get("/api/rooms");
             if (data.success) setRooms(data.rooms);
-        } catch (error) {
-            toast.error(error.response?.data?.message || error.message);
+        } catch (err) {
+            safeError(err);
         }
     };
 
     const fetchHotels = async () => {
         try {
-            const { data } = await axios.get('/api/hotels');
+            const { data } = await axios.get("/api/hotels");
             if (data.success) setHotels(data.hotels);
-        } catch (error) {
-            toast.error(error.response?.data?.message || error.message);
+        } catch (err) {
+            safeError(err);
         }
     };
 
     const fetchOrders = async () => {
-        if (!user) return;
         try {
-            const { data } = await axios.get('/api/bookings/orders');
+            const headers = await authHeaders();
+            const { data } = await axios.get("/api/bookings/orders", { headers });
             if (data.success) setOrders(data.orders);
-        } catch (error) {
-            toast.error(error.response?.data?.message || error.message);
+        } catch (err) {
+            safeError(err);
         }
     };
 
     const fetch_hotelRooms = async () => {
-        if (!user) return;
         try {
-            const token = await getToken();
-            const { data } = await axios.get('/api/rooms/owner', { headers: { Authorization: `Bearer ${token}` } });
+            const headers = await authHeaders();
+            const { data } = await axios.get("/api/rooms", { headers });
             if (data.success) set_hotel_Rooms(data.rooms);
-        } catch (error) {
-            toast.error(error.response?.data?.message || error.message);
+        } catch (err) {
+            safeError(err);
         }
     };
 
     const fetchPendingPayments = async () => {
-        if (!user) return;
         try {
-            const { data } = await axios.get('/api/hotels/payment');
+            const headers = await authHeaders();
+            const { data } = await axios.get("/api/hotels/payment", { headers });
             if (data.success) setPendingPayment(data.pendingBookings);
-        } catch (error) {
-            toast.error(error.response?.data?.message || error.message);
+        } catch (err) {
+            safeError(err);
         }
     };
 
     const fetchCities = async () => {
-        if (!user) return;
         try {
-            const token = await getToken();
-            const { data } = await axios.get('/api/cities', { headers: { Authorization: `Bearer ${token}` } });
+            const headers = await authHeaders();
+            const { data } = await axios.get("/api/cities", { headers });
             if (data.success) setCity(data.cities);
-        } catch (error) {
-            toast.error(error.response?.data?.message || error.message);
+        } catch (err) {
+            safeError(err);
         }
     };
 
     const fetchOwnerHotels = async () => {
-        if (!user) return;
         try {
-            const token = await getToken();
-            const { data } = await axios.get('/api/hotels/owner', { headers: { Authorization: `Bearer ${token}` } });
+            const headers = await authHeaders();
+            const { data } = await axios.get("/api/hotels/owner", { headers });
             if (data.success) setPending(data.hotelTemp.length > 0);
-        } catch (error) {
-            toast.error("Unable to fetch your hotels");
+        } catch (err) {
+            if (user) toast.error("Unable to fetch your hotels");
         }
     };
 
-    // --- EFFECTS ---
     useEffect(() => {
         if (!user) {
             resetAppContext();
             setLoading(false);
+            fetchRooms();
+            fetchHotels();
+            fetch_hotelRooms();
             return;
         }
 
-        // fetch user-related data
         setLoading(true);
+
         Promise.all([
             fetchUser(),
             fetchPendingHotels(),
             fetch_hotelRooms(),
             fetchPendingPayments(),
             fetchOrders(),
-            fetchCities()
+            fetchCities(),
         ]).finally(() => setLoading(false));
 
-        // fetch general data (does not require user)
         fetchRooms();
         fetchHotels();
-
     }, [user]);
 
-    // --- CONTEXT VALUE ---
     const value = {
         currency,
         navigate,
