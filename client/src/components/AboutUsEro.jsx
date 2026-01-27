@@ -24,7 +24,7 @@ const AboutUsEro = () => {
                     </a>
             </div>
         </div>
-        <img src="../assets/jason-rosewell-P5aY_FocXAI-unsplash.jpg" alt="hero" class="max-w-sm sm:max-w-md lg:max-w-lg 2xl:max-w-xl transition-all duration-300" />
+        {/* <img src="../assets/jason-rosewell-P5aY_FocXAI-unsplash.jpg" alt="hero" class="max-w-sm sm:max-w-md lg:max-w-lg 2xl:max-w-xl transition-all duration-300" /> */}
     </main>
   )
 }
