@@ -1,6 +1,8 @@
 import React from "react";
 import { useAppContext } from "../../context/AppContext";
 import { useEffect, useState } from 'react'
+import toast from "react-hot-toast";
+
 
 
 import { BadgeCheck, XCircle, Clock } from "lucide-react";
@@ -9,7 +11,7 @@ import { BadgeCheck, XCircle, Clock } from "lucide-react";
 
 export default function Dashboard() {
 
-    const { Pending, PendingPayment, orders, user } = useAppContext()
+    const { Pending, PendingPayment, orders, user, axios } = useAppContext()
 
   const [dashboardData, setDashboardData] = useState({
           bookings: [],

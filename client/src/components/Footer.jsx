@@ -1,7 +1,41 @@
-import React from 'react'
-import { assets } from '../assets/assets'
+import React, { useState } from "react";
+import { assets } from "../assets/assets";
+import { useAppContext } from "../context/AppContext";
+
 
 const Footer = () => {
+
+    const { axios } = useAppContext();
+    const [email, setEmail] = useState("");
+    const [status, setStatus] = useState("idle");
+    const [message, setMessage] = useState("");
+
+    const handleSubscribe = async () => {
+  if (!email) {
+    setStatus("error");
+    setMessage("Please enter an email address");
+    return;
+  }
+
+  try {
+    setStatus("loading");
+
+    const { data } = await axios.post("/api/newsletter/subscribe", {
+      email,
+    });
+
+    if (data.message) {
+      setStatus("success");
+      setMessage(data.message);
+      setEmail("");
+    }
+  } catch (err) {
+    setStatus("error");
+    setMessage(err.response?.data?.message || err.message);
+  }
+};
+
+
     return (
         <div className='bg-[#F6F9FC] text-gray-500/80 pt-8 px-6 md:px-16 lg:px-24 xl:px-32'>
             <div className='flex flex-wrap justify-between gap-12 md:gap-6'>
@@ -21,22 +55,10 @@ const Footer = () => {
                 <div>
                     <p className='font-playfair text-lg text-gray-800'>COMPANY</p>
                     <ul className='mt-3 flex flex-col gap-2 text-sm'>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Partners</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <p className='font-playfair text-lg text-gray-800'>SUPPORT</p>
-                    <ul className='mt-3 flex flex-col gap-2 text-sm'>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Safety Information</a></li>
-                        <li><a href="#">Cancellation Options</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Accessibility</a></li>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/hotels">Hotels</a></li>
+                        <li><a href="/experience">Experience</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
                     </ul>
                 </div>
 
@@ -46,11 +68,28 @@ const Footer = () => {
                         Subscribe to our newsletter for travel inspiration and special offers.
                     </p>
                     <div className='flex items-center mt-4'>
-                        <input type="text" className='bg-white rounded-l border border-gray-300 h-9 px-3 outline-none' placeholder='Your email' />
-                        <button className='flex items-center justify-center bg-black h-9 w-9 aspect-square rounded-r'>
+                        <input type="email" className='bg-white rounded-l border border-gray-300 h-9 px-3 outline-none'
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            disabled={status === "loading"}
+                            />
+                        <button
+                            onClick={handleSubscribe}
+                            disabled={status === "loading"}
+                            className='flex items-center justify-center bg-black h-9 w-9 aspect-square rounded-r'>
                             <img src={assets.arrowIcon} alt="arrow-icon" className='w-3.5 invert' />
                         </button>
                     </div>
+                          {message && (
+                            <p
+                            className={`mt-4 text-sm ${
+                                status === "success" ? "text-green-400" : "text-red-400"
+                            }`}
+                            >
+                            {message}
+                            </p>
+                        )}
                 </div>
             </div>
             <hr className='border-gray-300 mt-8' />

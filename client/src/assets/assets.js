@@ -38,6 +38,8 @@ import hotelIcon from "./hotel-02-stroke-rounded.svg";
 import paymentIcon from "./credit-card-pos-stroke-rounded.svg";
 import userIcon2 from "./user-account-stroke-rounded.svg";
 import cityIcon from "./city.svg";
+import bookingsIcon from "./brand-booking.svg";
+import support from "./support.svg";
 
 
 
@@ -45,6 +47,8 @@ export const assets = {
     logo,
     searchIcon,
     userIcon,
+    support,
+    bookingsIcon,
     calenderIcon,
     locationIcon,
     starIconFilled,
@@ -83,9 +87,9 @@ export const assets = {
 
 export const cities = [
     "Dubai",
-    "Abuja",
-    "Lagos",
-    "Kano",
+    "Singapore",
+    "New York",
+    "London",
 ];
 
 

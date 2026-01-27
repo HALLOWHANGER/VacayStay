@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
+import Experience from './pages/Experience'
 import About from './pages/About'
 import Navbar from './components/Navbar'
 import Layout from './pages/hotelOwner/Layout'
@@ -19,9 +20,13 @@ import { Toaster } from 'react-hot-toast'
 import AllHotels from './pages/AllHotels'
 import AllRooms from './pages/AllRooms'
 import RoomDetails from './pages/RoomDetails'
+import ContactUS from './pages/ContactUS'
 import Footer from './components/Footer'
 import MyBookings from './pages/MyBookings'
+import SupportInbox from './pages/admin/SupportInbox'
 import Loader from './components/Loader'
+import Booking from './pages/admin/ListBookin'
+import BookingList from './pages/hotelOwner/ListBookin'
 
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
@@ -40,6 +45,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/experience" element={<Experience />} />
+          <Route path="/contact" element={<ContactUS />} />
           <Route path="/hotels" element={<AllHotels />} />
           <Route path="/hotels/rooms/:id" element={<AllRooms />} />
           <Route path="/rooms/:id" element={<RoomDetails />} />
@@ -50,6 +57,7 @@ const App = () => {
             <Route index element={<Dashboard />} />
             <Route path="add-room" element={<AddRoom />} />
             <Route path="list-room" element={<ListRoom />} />
+            <Route path="bookings" element={<BookingList />} />
           </Route>
 
           <Route path="/admin" element={<AdminLayout />}>
@@ -58,6 +66,8 @@ const App = () => {
             <Route path="hotels" element={<AdminHotels />} />
             <Route path="list-room" element={<AdminRooms />} />
             <Route path="list-city" element={<AdminCity />} />
+            <Route path="support-inbox" element={<SupportInbox />} />
+            <Route path="list-bookings" element={<Booking />} />
             <Route path="list-users" element={<AdminUsers />} />
           </Route>
         </Routes>

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { assets, roomCommonData } from '../assets/assets'
 import { useAppContext } from '../context/AppContext';
 import { useUser } from "@clerk/clerk-react";
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { useParams } from 'react-router-dom';
 import StarRating from '../components/StarRating';
 import toast from 'react-hot-toast';
@@ -17,51 +18,36 @@ const RoomDetails = () => {
     const [mainImage, setMainImage] = useState(null);
     const [checkInDate, setCheckInDate] = useState(null);
     const [checkOutDate, setCheckOutDate] = useState(null);
+    const [bookings, setBookings] = useState([]);
+    const ifUserPrev = bookings.some(
+  booking =>
+    booking.user === user?.id &&
+    booking.room === room?._id
+    );
+
     const [guests, setGuests] = useState(1);
 
     const currency = import.meta.env.VITE_CURRENCY
 
-    const [isAvailable, setIsAvailable] = useState(false);
-
-    const checkAvailability = async () => {
-        try {
-
-            if (checkInDate >= checkOutDate) {
-                toast.error('Check-In Date should be less than Check-Out Date')
-                return;
-            }
-
-            const { data } = await axios.post('/api/bookings/check-availability', { room: id, checkInDate, checkOutDate })
-            if (data.success) {
-                if (data.isAvailable) {
-                    setIsAvailable(true)
-                    toast.success('Room is available')
-                } else {
-                    setIsAvailable(false)
-                    toast.error('Room is not available')
-                }
-            } else {
-                toast.error(data.message)
-            }
-        } catch (error) {
-            toast.error(error.message)
-        }
-    }
-
     const onSubmitHandler = async (e) => {
         try {
+            if (checkOutDate <= checkInDate) {
+                toast.error("Invalid date selection, Check-Out date must be after Check-In date");
+                return;
+            }
+            if (ifUserPrev) {
+                toast.error("You have already booked this room");
+                navigate('/my-bookings');
+                return;
+            }
             e.preventDefault();
-            if (!isAvailable) {
-                return checkAvailability();
+            const { data } = await axios.post('/api/bookings/book', { room: id, checkInDate, checkOutDate, guests, paymentMethod: "Pay At Hotel" }, { headers: { Authorization: `Bearer ${await getToken()}` } })
+            if (data.success) {
+                toast.success(data.message)
+                navigate('/my-bookings')
+                scrollTo(0, 0)
             } else {
-                const { data } = await axios.post('/api/bookings/book', { room: id, checkInDate, checkOutDate, guests, paymentMethod: "Pay At Hotel" }, { headers: { Authorization: `Bearer ${await getToken()}` } })
-                if (data.success) {
-                    toast.success(data.message)
-                    navigate('/my-bookings')
-                    scrollTo(0, 0)
-                } else {
-                    toast.error(data.message)
-                }
+                toast.error(data.message)
             }
         } catch (error) {
             toast.error(error.message)
@@ -73,6 +59,47 @@ const RoomDetails = () => {
         room && setRoom(room);
         room && setMainImage(room.images[0]);
     }, [rooms]);
+
+    useEffect(() => {
+        const fetchBookings = async () => {
+            const { data } = await axios.get(`/api/bookings/room/${room._id}`);
+            setBookings(data);
+        };
+
+        if (room?._id) fetchBookings();
+    }, [room]);
+    
+    const normalizeDate = (date) =>
+        new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+
+    const disabledDates = useMemo(() => {
+    const dates = [];
+
+  bookings.forEach(({ checkInDate, checkOutDate, user }) => {
+    let current = normalizeDate(new Date(checkInDate));
+    const end = normalizeDate(new Date(checkOutDate));
+
+
+    while (current <= end) {
+      dates.push(new Date(current));
+      current.setDate(current.getDate() + 1);
+    }
+  });
+
+  return dates;
+    }, [bookings]);
+    
+const isDateBooked = (date) => {
+  return bookings.some(({ checkInDate, checkOutDate }) => {
+    return (
+      date >= new Date(checkInDate) &&
+      date <= new Date(checkOutDate)
+    );
+  });
+};
+
+
 
     return room && (
         <div className='py-28 md:py-35 px-4 md:px-16 lg:px-24 xl:px-32'>
@@ -123,7 +150,6 @@ const RoomDetails = () => {
                 <p className='text-2xl font-medium'>{currency}{room.pricePerNight}/night</p>
             </div>
 
-            {/* CheckIn CheckOut Form */}
             <form
   onSubmit={(e) => {
     e.preventDefault();
@@ -138,37 +164,34 @@ const RoomDetails = () => {
   <div className='flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500'>
     <div className='flex flex-col'>
       <label htmlFor='checkInDate' className='font-medium'>Check-In</label>
-      <input
-        onChange={(e) => setCheckInDate(e.target.value)}
-        id='checkInDate'
-        type='date'
-        min={new Date().toISOString().split("T")[0]}
-        max={new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-          .toISOString()
-          .split("T")[0]}
-        className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none'
-        placeholder='Check-In'
-        required
-      />
+      <DatePicker
+        selected={checkInDate}
+        onChange={(date) => {
+            setCheckInDate(date);
+            setCheckOutDate(null);
+        }}
+        minDate={new Date()}
+        maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + 1))}
+        excludeDates={disabledDates}
+        placeholderText="Check-In"
+        className="w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
+        />
     </div>
 
     <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
 
     <div className='flex flex-col'>
       <label htmlFor='checkOutDate' className='font-medium'>Check-Out</label>
-      <input
-        onChange={(e) => setCheckOutDate(e.target.value)}
-        id='checkOutDate'
-        type='date'
-        min={checkInDate || new Date().toISOString().split("T")[0]}
-        max={new Date(new Date().setFullYear(new Date().getFullYear() + 1))
-          .toISOString()
-          .split("T")[0]}
-        disabled={!checkInDate}
-        className='w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none'
-        placeholder='Check-Out'
-        required
-      />
+      <DatePicker
+  selected={checkOutDate}
+  onChange={(date) => setCheckOutDate(date)}
+  minDate={checkInDate}
+  excludeDates={disabledDates}
+  disabled={!checkInDate}
+  placeholderText="Check-Out"
+  className="w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
+/>
+
     </div>
 
     <div className='w-px h-15 bg-gray-300/70 max-md:hidden'></div>
@@ -187,12 +210,30 @@ const RoomDetails = () => {
     </div>
   </div>
 
-  <button
-    type='submit'
-    className='bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-25 py-3 md:py-4 text-base cursor-pointer'
-  >
-    {!user ? "Login to Book" : isAvailable ? "Book Now" : "Check Availability"}
-  </button>
+<button
+  type="submit"
+  className={`
+    transition-all active:scale-95
+    text-white rounded-md
+    max-md:w-full max-md:mt-6
+    md:px-25 py-3 md:py-4
+    cursor-pointer
+    ${
+      !user || ifUserPrev
+        ? "bg-red-500 hover:bg-red-600 text-sm"
+        : "bg-primary hover:bg-primary-dull text-base"
+    }
+  `}
+>
+  {!user
+    ? "Login to Book"
+    : ifUserPrev
+    ? "You Booked Already"
+    : "Book Now"}
+</button>
+
+
+
 </form>
 
 

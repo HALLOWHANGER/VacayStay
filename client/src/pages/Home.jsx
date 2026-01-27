@@ -7,8 +7,6 @@ import NewsLetter from '../components/NewsLetter'
 import RecommendedHotels from '../components/RecommendedHotels'
 
 const Home = () => {
-
-
     return (
         <>
             <Hero />

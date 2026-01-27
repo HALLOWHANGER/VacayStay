@@ -15,7 +15,7 @@ const Navbar = () => {
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Hotels', path: '/hotels' },
-        { name: 'Experience', path: '/' },
+        { name: 'Experience', path: '/experience' },
         { name: 'About', path: '/about' },
     ];
 
@@ -99,7 +99,6 @@ const Navbar = () => {
             </div>
 
             <div className="hidden md:flex items-center gap-4">
-                {/* <img src={assets.searchIcon} alt="search" className={`h-7 transition-all duration-500`} /> */}
                 {user ? (
                     <UserButton >
                         <UserButton.MenuItems>

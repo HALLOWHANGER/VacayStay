@@ -9,6 +9,40 @@ const MyBookings = () => {
     const { axios, getToken, user, currency } = useAppContext();
     const [bookings, setBookings] = useState([]);
 
+    const StatusBadge = ({ status, paymentStatus }) => {
+  let label = "Pending";
+  let style = "bg-yellow-100 text-yellow-700";
+
+  if (status === "cancelled") {
+    label = "Cancelled";
+    style = "bg-gray-200 text-gray-700";
+  }
+
+  if (status === "refunded") {
+    label = "Refunded";
+    style = "bg-red-100 text-red-700";
+  }
+
+  if (paymentStatus === "paid" && status === "confirmed") {
+    label = "Confirmed";
+    style = "bg-green-100 text-green-700";
+  }
+
+  if (paymentStatus === "paid" && status !== "confirmed") {
+    label = "Paid";
+    style = "bg-blue-100 text-blue-700";
+  }
+
+  return (
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-medium ${style}`}
+    >
+      {label}
+    </span>
+  );
+};
+
+
 
     const fetchUserBookings = async () => {
         try {
@@ -54,52 +88,100 @@ const MyBookings = () => {
                 </div>
 
                 {bookings.map((booking) => (
-                    <div key={booking._id} className="grid grid-cols-1 md:grid-cols-[3fr_2fr_1fr] w-full border-b border-gray-300 py-6 first:border-t">
-                        <div className="flex flex-col md:flex-row">
-                            <img className="min-md:w-44 rounded shadow object-cover" src={booking.room.images[0]} alt="hotel-img" />
-                            <div className="flex flex-col gap-1.5 max-md:mt-3 min-md:ml-4">
-                                <p className="font-playfair text-2xl">
-                                    {booking.hotel.name}
-                                    <span className="font-inter text-sm"> ({booking.room.roomType})</span>
-                                </p>
-                                <div className="flex items-center gap-1 text-sm text-gray-500">
-                                    <img src={assets.locationIcon} alt="location-icon" />
-                                    <span>{booking.hotel.address}</span>
-                                </div>
-                                <div className="flex items-center gap-1 text-sm text-gray-500">
-                                    <img src={assets.guestsIcon} alt="guests-icon" />
-                                    <span>Guests: {booking.guests}</span>
-                                </div>
-                                <p className="text-base">Total: {currency}{booking.totalPrice}</p>
-                            </div>
-                        </div>
+  <div
+    key={booking._id}
+    className="grid grid-cols-1 md:grid-cols-[3fr_2fr_1fr] w-full border-b border-gray-300 py-6 first:border-t"
+  >
+    {/* LEFT */}
+    <div className="flex flex-col md:flex-row">
+      <img
+        className="min-md:w-44 rounded shadow object-cover"
+        src={booking.room.images[0]}
+        alt="hotel-img"
+      />
+      <div className="flex flex-col gap-1.5 max-md:mt-3 min-md:ml-4">
+        <p className="font-playfair text-2xl">
+          {booking.hotel.name}
+          <span className="font-inter text-sm">
+            {" "}
+            ({booking.room.roomType})
+          </span>
+        </p>
 
-                        <div className="flex flex-row md:items-center md:gap-12 mt-3 gap-8">
-                            <div>
-                                <p>Check-In:</p>
-                                <p className="text-gray-500 text-sm">{new Date(booking.checkInDate).toDateString()}</p>
-                            </div>
-                            <div>
-                                <p>Check-Out:</p>
-                                <p className="text-gray-500 text-sm">{new Date(booking.checkOutDate).toDateString()}</p>
-                            </div>
-                        </div>
+        <div className="flex items-center gap-1 text-sm text-gray-500">
+          <img src={assets.locationIcon} alt="location-icon" />
+          <span>{booking.hotel.address}</span>
+        </div>
 
-                        <div className="flex flex-col items-start justify-center pt-3">
-                            <div className="flex items-center gap-2">
-                                <div className={`h-3 w-3 rounded-full ${booking.isPaid ? "bg-green-500" : "bg-red-500"}`}></div>
-                                <p className={`text-sm ${booking.isPaid ? "text-green-500" : "text-red-500"}`}>
-                                    {booking.isPaid ? "Paid" : "Unpaid"}
-                                </p>
-                            </div>
-                            {!booking.isPaid && (
-                                <button onClick={()=> handlePayment(booking._id)} className="px-4 py-1.5 mt-4 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all cursor-pointer">
-                                    Pay Now
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                ))}
+        <div className="flex items-center gap-1 text-sm text-gray-500">
+          <img src={assets.guestsIcon} alt="guests-icon" />
+          <span>Guests: {booking.guests}</span>
+        </div>
+
+        <p className="text-base">
+          Total: {currency}
+          {booking.totalPrice}
+        </p>
+      </div>
+    </div>
+
+    {/* MIDDLE */}
+    <div className="flex flex-row md:items-center md:gap-12 mt-3 gap-8">
+      <div>
+        <p>Check-In:</p>
+        <p className="text-gray-500 text-sm">
+          {new Date(booking.checkInDate).toDateString()}
+        </p>
+      </div>
+      <div>
+        <p>Check-Out:</p>
+        <p className="text-gray-500 text-sm">
+          {new Date(booking.checkOutDate).toDateString()}
+        </p>
+      </div>
+    </div>
+
+    {/* RIGHT */}
+    <div className="flex flex-col items-start justify-center pt-3 gap-2">
+  <StatusBadge
+    status={booking.status}
+    paymentStatus={booking.paymentStatus}
+  />
+
+  <div className="flex items-center gap-2">
+    <div
+      className={`h-3 w-3 rounded-full ${
+        booking.paymentStatus === "paid"
+          ? "bg-green-500"
+          : "bg-red-500"
+      }`}
+    ></div>
+
+    <p
+      className={`text-sm ${
+        booking.paymentStatus === "paid"
+          ? "text-green-500"
+          : "text-red-500"
+      }`}
+    >
+      {booking.paymentStatus === "paid" ? "Paid" : "Unpaid"}
+    </p>
+  </div>
+
+  {booking.paymentStatus !== "paid" &&
+    booking.status !== "cancelled" &&
+    booking.status !== "refunded" && (
+      <button
+        onClick={() => handlePayment(booking._id)}
+        className="px-4 py-1.5 mt-2 text-xs border border-gray-400 rounded-full hover:bg-gray-50 transition-all"
+      >
+        Pay Now
+      </button>
+    )}
+</div>
+  </div>
+))}
+
             </div>
         </div>
     )

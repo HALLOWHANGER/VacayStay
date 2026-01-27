@@ -11,7 +11,6 @@ const hotelSchema = new Schema(
     images: [{ type: String }],
     isAvailable: { type: Boolean, default: true },
 
-
   },
   { timestamps: true }
 );
