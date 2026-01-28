@@ -5,6 +5,30 @@ import { useAppContext } from '../../context/AppContext';
 
 const Dashboard = () => {
 
+
+    const STATUS_MAP = {
+      "paid": {
+        color: "text-green-500 bg-green-100",
+      },
+      "cancelled": {
+        color: "text-red-500 bg-red-100",
+      },
+      "pending": {
+        color: "text-yellow-500 bg-yellow-100",
+        },
+      "awaiting": {
+        color: "text-yellow-500 bg-yellow-100",
+      },
+      "refunded": {
+        color: "text-yellow-500 bg-yellow-100",
+      },
+    };
+    
+      const statusColor = (status) => {
+      return STATUS_MAP[status]?.color || "text-gray-500";
+    };
+    
+
     const { currency, user, getToken, toast, axios } = useAppContext();
 
     const [dashboardData, setDashboardData] = useState({
@@ -72,9 +96,7 @@ const Dashboard = () => {
                                     <td className='py-3 px-4 text-gray-400 border-t border-gray-300 max-sm:hidden'>{item.room.roomType}</td>
                                     <td className='py-3 px-4 text-gray-400 border-t border-gray-300 text-center'>{currency} {item.totalPrice}</td>
                                     <td className='py-3 px-4  border-t border-gray-300 flex'>
-                                        <button className={`py-1 px-3 text-xs rounded-full mx-auto ${item.isPaid ? "bg-green-200 text-green-600" : "bg-amber-200 text-yellow-600"}`}>
-                                            {item.isPaid ? "Completed" : "Pending"}
-                                        </button>
+                                        <span className={`py-1 px-3 text-xs rounded-full mx-auto ${statusColor(item.status)}`}>{item.status}</span>
                                     </td>
                                 </tr>
                             ))

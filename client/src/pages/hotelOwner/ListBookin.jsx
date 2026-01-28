@@ -8,6 +8,7 @@ const BookingList = () => {
   const [bookings, setBookings] = useState([]);
   const [expanded, setExpanded] = useState(null);
 
+
   const fetchBookings = async () => {
     try {
       const { data } = await axios.get("/api/bookings", {

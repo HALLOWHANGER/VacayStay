@@ -314,7 +314,6 @@ export const getOwnerBookings = async (req, res) => {
       .populate("user", "name email")
       .sort({ createdAt: -1 });
 
-    // remove bookings where hotel didn't match owner
     const ownerBookings = bookings.filter(b => b.hotel !== null);
 
     res.json({ success: true, bookings: ownerBookings });

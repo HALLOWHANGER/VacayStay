@@ -1,9 +1,9 @@
 import React from 'react'
-import heroImage from '../assets/jason-rosewell-P5aY_FocXAI-unsplash.jpg'
-import { useAppContext } from '../context/AppContext'
+import { useNavigate } from "react-router-dom";
+
 
 const AboutUsEro = () => {
-  const { navigate } = useAppContext()
+  const navigate = useNavigate();
   return (
     <main class="flex flex-col max-md:gap-20 md:flex-row pb-20 items-center justify-between mt-40 px-4 md:px-16 lg:px-24 xl:px-32">
         <div class="flex flex-col items-center md:items-start">
@@ -27,7 +27,7 @@ const AboutUsEro = () => {
                     </a>
             </div>
         </div>
-        <img src={heroImage} alt="hero" className="max-w-sm sm:max-w-md lg:max-w-lg 2xl:max-w-xl transition-all duration-300" />
+        <img src="../assets/jason-rosewell-P5aY_FocXAI-unsplash.jpg" alt="hero" class="max-w-sm sm:max-w-md lg:max-w-lg 2xl:max-w-xl transition-all duration-300" />
     </main>
   )
 }

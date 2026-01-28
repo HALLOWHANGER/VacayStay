@@ -13,7 +13,7 @@ const data = [
     },
     {
         question: 'What is VacayStay Rental and how does it help travelers?',
-        answer: 'Hotel Rental is a platform that provides easy access to hotel rooms, helping travelers quickly find and book accommodations that fit their needs and budget.',
+        answer: 'Otel Rental is a platform that provides easy access to hotel rooms, helping travelers quickly find and book accommodations that fit their needs and budget.',
     },
     {
         question: 'Can I book multiple hotels or rooms in my existing account?',

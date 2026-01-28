@@ -1,39 +1,19 @@
-/**
- * contactRoutes.js - Contact Form and Support Routes
- * 
- * This file handles user contact inquiries and support messages:
- * - Users can submit contact forms
- * - Support team can view and reply to messages
- * - Email notifications sent to users
- */
-
 import express from "express";
 import Contact from "../models/Contact.js";
 import sgMail from "@sendgrid/mail";
 
-/**
- * Initialize SendGrid email service
- */
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const router = express.Router();
 
-/**
- * Submit a contact form
- * POST /api/contact/
- * Body: { name, email, message }
- * Public endpoint - no authentication required
- */
 router.post("/", async (req, res) => {
     try {
         const { name, email, message } = req.body;
 
-        // Validate required fields
         if (!name || !email || !message) {
             return res.status(400).json({ message: "All fields required" });
         }
 
-        // Create contact record in database
         const contact = await Contact.create({
             name,
             email,
@@ -50,11 +30,6 @@ router.post("/", async (req, res) => {
     }
 });
 
-/**
- * Get all contact messages (admin view)
- * GET /api/contact/
- * Returns: List of all contact submissions
- */
 router.get("/", async (req, res) => {
     try {
         const contacts = await Contact.find().sort({ createdAt: -1 });
@@ -68,17 +43,10 @@ router.get("/", async (req, res) => {
     }
 });
 
-/**
- * Send reply to a contact message
- * POST /api/contact/reply
- * Body: { messageId, reply }
- * Sends email notification to user and saves reply
- */
 router.post("/reply", async (req, res) => {
   try {
     const { messageId, reply } = req.body;
 
-    // Validate required fields
     if (!messageId || !reply) {
       return res.status(400).json({
         success: false,
@@ -86,7 +54,6 @@ router.post("/reply", async (req, res) => {
       });
     }
 
-    // Find the contact message
     const contact = await Contact.findById(messageId);
     if (!contact) {
       return res.status(404).json({
@@ -95,7 +62,6 @@ router.post("/reply", async (req, res) => {
       });
     }
 
-    // Send reply email via SendGrid
     await sgMail.send({
       to: contact.email,
       from: {
@@ -118,7 +84,6 @@ router.post("/reply", async (req, res) => {
 `,
     });
 
-    // Save reply in database
     contact.replies.push({ message: reply });
     contact.replied = true;
     await contact.save();
