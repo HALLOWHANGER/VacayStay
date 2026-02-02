@@ -42,6 +42,32 @@ const BookingList = () => {
     }
   };
 
+const approveRescheduleRequest = async (bookingId, approve) => {
+  try {
+    const { data } = await axios.put(
+      "/api/bookings/ApproveReschedule",
+      {
+        bookingId,
+        approve,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      }
+    );
+
+    toast.success(data.message || "Reschedule processed");
+    fetchBookings();
+  } catch (err) {
+    toast.error(
+      err?.response?.data?.message || "Failed to process reschedule"
+    );
+  }
+};
+
+
+
   const refundBooking = async (id) => {
     try {
       const { data } = await axios.put(
@@ -69,7 +95,7 @@ const BookingList = () => {
 
       <div className="border rounded-lg mt-6 overflow-hidden">
         {bookings.map((b) => (
-          <div key={b._id} className="border-b">
+          <div key={b._id} className={`border-b ${b.refundStatus === "requested" ? "bg-blue-100" : ""}`}>
             <div
               onClick={() =>
                 setExpanded(expanded === b._id ? null : b._id)
@@ -81,7 +107,7 @@ const BookingList = () => {
                   Booking #{b._id.slice(-6)}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {b.paymentStatus.toUpperCase()} • {b.status}
+                  {b.paymentStatus.toUpperCase()} • {b.status} {b.refundStatus === "requested" ? `• Refund Requested` : ""} {b.rescheduleRequest.status === "pending" ? `• Reschedule Pending` : ""}
                 </p>
               </div>
 
@@ -120,6 +146,33 @@ const BookingList = () => {
                         Refund
                       </button>
                     )}
+
+                  {b.paymentStatus === "awaiting" &&
+                    b.refundStatus === "requested" && (
+                      <button
+                        onClick={() => refundBooking(b._id)}
+                        className="px-4 py-2 bg-red-600 text-white rounded"
+                      >
+                        Approve Refund
+                      </button>
+                    )}
+
+                  {b.rescheduleRequest.status === "pending" && (
+                    <button
+                      onClick={() => approveRescheduleRequest(b._id, true)}
+                      className="px-4 py-2 bg-green-600 text-white rounded"
+                    >
+                      Approve Reschedule
+                    </button>
+                  )}
+
+                  {b.rescheduleRequest.status === "pending" && (
+                    <button
+                      onClick={() => approveRescheduleRequest(b._id, false)}
+                      className="px-4 py-2 bg-red-600 text-white rounded"
+                    >
+                      Decline Reschedule
+                    </button>)}
                 </div>
               </div>
             )}

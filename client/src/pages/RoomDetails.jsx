@@ -22,7 +22,8 @@ const RoomDetails = () => {
     const ifUserPrev = bookings.some(
   booking =>
     booking.user === user?.id &&
-    booking.room === room?._id
+            booking.room === room?._id &&
+            booking.status === 'confirmed'
     );
 
     const [guests, setGuests] = useState(1);

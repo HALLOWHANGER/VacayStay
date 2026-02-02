@@ -53,6 +53,24 @@ const fetchMessages = async () => {
     }
   };
 
+  const MarkAsRead = async (msg) => {
+    try {
+      const { data } = await axios.post(
+        `/api/contact/mark-as-read/${msg._id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${await getToken()}` },
+        }
+      );
+
+      if (data.success) {
+        setActiveMessage(msg)
+      } else toast.error(data.message);
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   useEffect(() => {
     if (user) fetchMessages();
   }, [user]);
@@ -72,10 +90,15 @@ const fetchMessages = async () => {
     messages.map((msg) => (
       <div
         key={msg._id}
-        onClick={() => setActiveMessage(msg)}
+        onClick={() => MarkAsRead(msg)}
         className={`p-4 cursor-pointer border-b hover:bg-gray-50 ${
-          activeMessage?._id === msg._id ? "bg-gray-100" : ""
-        }`}
+  activeMessage?._id === msg._id
+    ? "bg-gray-100"
+    : !msg.isRead
+    ? "bg-blue-100"
+    : ""
+}`}
+
       >
         <p className="font-medium">{msg.name}</p>
         <p className="text-xs text-gray-500">{msg.email}</p>

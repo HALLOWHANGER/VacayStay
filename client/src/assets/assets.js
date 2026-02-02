@@ -40,7 +40,6 @@ import userIcon2 from "./user-account-stroke-rounded.svg";
 import cityIcon from "./city.svg";
 import bookingsIcon from "./brand-booking.svg";
 import support from "./support.svg";
-import heroImage from "./jason-rosewell-P5aY_FocXAI-unsplash.jpg";
 
 
 
@@ -84,7 +83,6 @@ export const assets = {
     paymentIcon,
     userIcon2,
     cityIcon,
-    heroImage,
 }
 
 export const cities = [

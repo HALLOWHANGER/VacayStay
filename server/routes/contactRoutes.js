@@ -101,4 +101,36 @@ router.post("/reply", async (req, res) => {
   }
 });
 
+router.post("/mark-as-read/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const contact = await Contact.findByIdAndUpdate(
+      id,
+      { isRead: true },
+      { new: true }
+    );
+
+    if (!contact) {
+      return res.status(404).json({
+        success: false,
+        message: "Message not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Message marked as read",
+      contact,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to mark message as read",
+    });
+  }
+});
+
+
 export default router;

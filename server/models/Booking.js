@@ -19,10 +19,7 @@ const bookingSchema = new Schema(
       default: "pending",
     },
 
-    paymentMethod: {
-      type: String,
-      default: "Pay At Hotel",
-    },
+    paymentMethod: { type: String, default: "Pay At Hotel" },
 
     paymentStatus: {
       type: String,
@@ -35,9 +32,22 @@ const bookingSchema = new Schema(
       enum: ["none", "requested", "refunded"],
       default: "none",
     },
+
+    rescheduleRequest: {
+      requested: { type: Boolean, default: false },
+      newCheckInDate: Date,
+      newCheckOutDate: Date,
+      status: {
+        type: String,
+        enum: ["pending", "approved", "rejected"],
+      },
+      requestedAt: Date,
+      reviewedAt: Date,
+    },
   },
   { timestamps: true }
 );
+
 
 const Booking = mongoose.model("Booking", bookingSchema);
 
