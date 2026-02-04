@@ -145,7 +145,8 @@ const statusIcon = (status) => {
             <tr className="text-slate-600 border-b">
               <th className="p-3">Order ID</th>
               <th className="p-3">Ordered Date</th>
-              <th className="p-3">Product Name</th>
+              <th className="p-3">Room Type</th>
+              <th className="p-3">Hotel</th>
               <th className="p-3">Product Price</th>
               <th className="p-3">Status</th>
             </tr>
@@ -159,6 +160,7 @@ const statusIcon = (status) => {
       <td className="p-3">{order.id}</td>
       <td className="p-3">{order.date}</td>
       <td className="p-3">{order.name}</td>
+      <td className="p-3">{order.hotel}</td>
       <td className="p-3">{order.price}</td>
       <td className="p-3 flex items-center gap-2">
         {statusIcon(displayStatus)}

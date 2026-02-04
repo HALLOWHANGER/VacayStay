@@ -151,7 +151,7 @@ export const getHotelBookings = async (req, res) => {
       .sort({ createdAt: -1 });
 
     const totalRevenue = bookings
-      .filter((b) => b.status !== "refunded")
+      .filter((b) => b.status !== "refunded" && b.paymentStatus === "paid" && b.refundStatus !== "refunded")
       .reduce((acc, b) => acc + b.totalPrice, 0);
 
     res.json({
@@ -207,7 +207,8 @@ function getFinalStatus(b) {
 export const generateOrders = async (req, res) => {
   try {
     const bookings = await Booking.find()
-      .populate("room", "name")
+      .populate("room", "roomType")
+      .populate("hotel", "name")
       .populate("user", "name");
 
     const orders = bookings.map((b) => ({
@@ -215,7 +216,8 @@ export const generateOrders = async (req, res) => {
       user: b.user?.name || "Unknown",
       date: b.checkInDate.toISOString().split("T")[0],
       checkOutDate: b.checkOutDate.toISOString().split("T")[0],
-      name: b.room?.name || "Unknown Room",
+      name: b.room?.roomType || "Unknown Room",
+      hotel: b.hotel?.name || "Unknown Hotel",
       price: `${b.totalPrice} NGN`,
       status: getFinalStatus(b),
     }));
