@@ -65,6 +65,10 @@ const resolveOrderStatus = (dashboardData) => {
     return "Paid";
   }
 
+  if (paymentStatus === "cancelled") {
+    return "Cancelled";
+  }
+
   return "Unknown";
 };
 

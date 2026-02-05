@@ -85,6 +85,23 @@ const approveRescheduleRequest = async (bookingId, approve) => {
     }
   };
 
+  const DeclineBooking = async (id) => {
+    try {
+      const { data } = await axios.put(
+        `/api/bookings/${id}/decline`,
+        {},
+        { headers: { Authorization: `Bearer ${await getToken()}` } }
+      );
+
+      if (data.success) {
+        toast.success("Booking declined");
+        fetchBookings();
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   return (
     <div>
       <Title
@@ -154,6 +171,16 @@ const approveRescheduleRequest = async (bookingId, approve) => {
                         className="px-4 py-2 bg-red-600 text-white rounded"
                       >
                         Approve Refund
+                      </button>
+                    )}
+
+                    {b.paymentStatus === "awaiting" &&
+                    b.refundStatus === "requested" && (
+                      <button
+                        onClick={() => DeclineBooking(b._id)}
+                        className="px-4 py-2 bg-red-600 text-white rounded"
+                      >
+                        Decline Refund
                       </button>
                     )}
 

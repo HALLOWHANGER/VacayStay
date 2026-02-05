@@ -23,13 +23,13 @@ const bookingSchema = new Schema(
 
     paymentStatus: {
       type: String,
-      enum: ["awaiting", "paid", "failed"],
+      enum: ["awaiting", "paid", "failed", "cancelled"],
       default: "awaiting",
     },
 
     refundStatus: {
       type: String,
-      enum: ["none", "requested", "refunded"],
+      enum: ["none", "requested", "refunded", "declined"],
       default: "none",
     },
 

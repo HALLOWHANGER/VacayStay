@@ -420,6 +420,55 @@ export const refundBooking = async (req, res) => {
   }
 };
 
+export const declineBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id).populate("user");
+    if (!booking)
+      return res.status(404).json({ success: false, message: "Not found" });
+
+    booking.status = "cancelled";
+    booking.refundStatus = "declined";
+    booking.paymentStatus = "cancelled";
+    await booking.save();
+
+
+    res.json({
+      success: true,
+      message: "Booking declined",
+    });
+
+    try {
+      await sgMail.send({
+        to: booking.user.email,
+        from: `VacayStay <${process.env.SENDGRID_SENDER}>`,
+        subject: "Your Refund Request Has Been Declined",
+        html: `
+          <h2>Refund Declined</h2>
+          <p>Hello ${booking.user.username},</p>
+          <p>Your refund request has been declined.</p>
+          <ul>
+            <li><b>Booking ID:</b> ${booking._id}</li>
+            <li><b>Refund Status:</b> Declined</li>
+          </ul>
+          <p>Please contact support if you have any questions.</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error(
+        "Refund email failed:",
+        emailError.response?.body?.errors || emailError.message
+      );
+    }
+
+  } catch (error) {
+    console.error(error);
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+};
+
+
 export const RequestRefund = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id).populate("user");

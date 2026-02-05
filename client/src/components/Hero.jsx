@@ -111,7 +111,7 @@ const Hero = () => {
             Check out
           </label>
           <DatePicker
-                  selected={checkInDate}
+                  selected={checkOutDate}
                   onChange={(date) => {
                       setCheckOutDate(date);
                   }}

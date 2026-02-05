@@ -46,10 +46,14 @@ const getPaymentLabel = (
     return "Reschedule Requested";
   }
 
+    if (refundStatus === "declined") {
+    return "Refund Declined";
+  }
+
+
   return "Unknown";
 };
 
-  
   const disabledDates = React.useMemo(() => {
     const dates = [];
 
