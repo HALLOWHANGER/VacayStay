@@ -47,7 +47,7 @@ const getPaymentLabel = (
   }
 
     if (refundStatus === "declined") {
-    return "Refund Declined";
+    return "Paid (Refund Declined)";
   }
 
 
@@ -238,7 +238,15 @@ return (
                 <div
                   className={`h-3 w-3 rounded-full ${
                     booking.paymentStatus === "paid"
-                      ? "bg-green-500"
+                    ? "bg-green-500"
+                    : booking.refundStatus === "requested"
+                    ? "bg-yellow-500"
+                        : booking.paymentStatus === "awaiting" && booking.refundStatus === "none"
+                        ? "bg-yellow-500"
+                        : booking.status === "cancelled" || booking.status === "refunded"
+                          ? "bg-red-500"
+                            : booking.refundStatus === "declined"
+                            ? "bg-green-500" 
                       : "bg-red-500"
                   }`}
                 />
@@ -246,7 +254,15 @@ return (
                   className={`text-sm ${
                     booking.paymentStatus === "paid"
                       ? "text-green-500"
-                      : "text-red-500"
+                      : booking.refundStatus === "requested"
+                      ? "text-yellow-500"
+                        : booking.paymentStatus === "awaiting" && booking.refundStatus === "none"
+                        ? "text-yellow-500"
+                        : booking.status === "cancelled" || booking.status === "refunded"
+                          ? "text-red-500"
+                            : booking.refundStatus === "declined"
+                            ? "text-green-500"
+                        : "text-red-500"
                   }`}
                 >
                   {getPaymentLabel(booking.paymentStatus, booking.refundStatus, booking.status, booking.rescheduleRequest)}

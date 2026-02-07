@@ -426,9 +426,9 @@ export const declineBooking = async (req, res) => {
     if (!booking)
       return res.status(404).json({ success: false, message: "Not found" });
 
-    booking.status = "cancelled";
+    booking.status = "confirmed";
     booking.refundStatus = "declined";
-    booking.paymentStatus = "cancelled";
+    booking.paymentStatus = "paid";
     await booking.save();
 
 
