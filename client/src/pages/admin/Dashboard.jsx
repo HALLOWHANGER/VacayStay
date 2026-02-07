@@ -46,8 +46,9 @@ const CardContent = ({ children }) => (
   <div className="p-5">{children}</div>
 );
 
+
 const resolveOrderStatus = (dashboardData) => {
-  const { paymentStatus, refundStatus } = dashboardData;
+  const { paymentStatus, refundStatus, status } = dashboardData;
 
   if (paymentStatus === "awaiting" && refundStatus !== "requested") {
     return "Pending Payment";
@@ -67,6 +68,10 @@ const resolveOrderStatus = (dashboardData) => {
 
   if (paymentStatus === "cancelled") {
     return "Cancelled";
+  }
+
+  if (paymentStatus === "cancelled" && status === "refunded" && refundStatus === "refunded") {
+    return "Cancelled & Refunded";
   }
 
   return "Unknown";

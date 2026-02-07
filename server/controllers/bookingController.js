@@ -380,7 +380,7 @@ export const refundBooking = async (req, res) => {
 
     booking.status = "refunded";
     booking.refundStatus = "refunded";
-    booking.paymentStatus = "awaiting";
+    booking.paymentStatus = "cancelled";
     await booking.save();
 
 
