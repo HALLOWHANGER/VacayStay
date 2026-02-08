@@ -70,7 +70,7 @@ const resolveOrderStatus = (dashboardData) => {
     return "Cancelled";
   }
 
-  if (paymentStatus === "cancelled" && status === "refunded" && refundStatus === "refunded") {
+  if (paymentStatus === "cancelled" && status === "cancelled" && refundStatus === "refunded") {
     return "Cancelled & Refunded";
   }
 

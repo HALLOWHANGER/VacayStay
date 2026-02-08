@@ -50,7 +50,7 @@ const getPaymentLabel = (
     return "Paid (Refund Declined)";
   }
 
-    if (paymentStatus === "cancelled" && status === "refunded" && refundStatus === "refunded") {
+    if (paymentStatus === "cancelled" && status === "cancelled" && refundStatus === "refunded") {
     return "Cancelled & Refunded";
   }
 

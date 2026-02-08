@@ -335,7 +335,7 @@ export const releaseBookingRoom = async (req, res) => {
         .json({ success: false, message: "Paid booking cannot be released" });
 
     booking.status = "cancelled";
-    booking.paymentStatus = "refunded";
+    booking.paymentStatus = "cancelled";
     booking.refundStatus = "refunded";
     await booking.save();
 

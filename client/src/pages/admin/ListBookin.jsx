@@ -145,7 +145,7 @@ const approveRescheduleRequest = async (bookingId, approve) => {
                 </p>
 
                 <div className="flex gap-3 mt-4">
-                  {b.paymentStatus !== "paid" && b.status !== "cancelled" && (
+                  {b.paymentStatus !== "paid" && b.status !== "cancelled" && b.refundStatus === "refunded" && (
                     <button
                       onClick={() => releaseRoom(b._id)}
                       className="px-4 py-2 bg-orange-500 text-white rounded"
