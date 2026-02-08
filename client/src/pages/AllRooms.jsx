@@ -49,10 +49,10 @@ const AllRooms = () => {
     ];
 
     const priceRanges = [
-        '0 to 500',
-        '500 to 1000',
-        '1000 to 2000',
-        '2000 to 3000',
+        '0 to 50000',
+        '50000 to 100000',
+        '100000 to 200000',
+        '200000 to 300000',
     ];
 
     const sortOptions = [
